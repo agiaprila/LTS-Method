@@ -1,0 +1,55 @@
+install.packages("MASS")
+install.packages('olsrr')
+library(olsrr)
+library(dplyr)
+library(gtools)
+library(MASS)
+
+data <- read.delim("clipboard")
+
+model_OLS <- lm(jumlah.kasus.TBC ~ kepadatan.penduduk + Pelayan.Kesehatan.Usia.Produktif + TTU + persentase.penduduk.miskin + persentase.imunisasi.BCG , 
+            data = data  )
+
+model_OLS <- lm(y ~ x1 + x2 + x3 + x4 + x5, data = data  )
+
+#cook distance
+ols_plot_cooksd_bar(model_OLS)
+data$cookdistance <- cooks.distance(model_OLS)
+
+#residual
+data$residual <- rstandard(model_OLS) 
+ols_plot_resid_stand(model_OLS)
+
+#laverage point
+data$laveragepoint <- hatvalues(model_OLS)
+ols_plot_resid_lev(model_OLS)
+
+
+#Rstudent
+data$Rstudent <- rstudent(model_OLS)
+ols_plot_resid_stud(model_OLS)
+ols_plot_resid_stud_fit(model_OLS)
+
+#DFFITS Concept
+data$DFFITS <- dffits(model_OLS)
+ols_plot_dffits(model_OLS)
+
+n <- 13
+yku <- data$y
+ypredOLS <- fitted(model_OLS)
+MSE <- sum((ypredOLS - yku)^2)/13
+MSE
+
+
+#LTS
+# step tanpa pencilan
+LTS <- ltsreg(y ~ x1 + x2 + x3 + x4 + x5, data = data)
+
+# step max pencilan
+LTS1 <- ltsreg(y ~ -x1 + -x2 + -x3 + -x4 + -x5, data = data)
+
+summary(LTS)
+
+ypredLTS <- fitted(LTS)
+MSE1 <- sum((ypredLTS - yku)^2)/13
+MSE1
