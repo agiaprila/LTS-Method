@@ -1,14 +1,15 @@
 data <- read.delim("clipboard")
 head(data)
 tail(data)
-str(datanew)
+str(data)
 
 #MODEL
-regModelku <- lm(Y~X1+X2+X3+X4+X5, trans1 = trans1)
+regModelku <- lm(Y~X1+X2+X3+X4+X5, data = data)
 summary(regModelku)
 
 #uji asumsi
 residual <- residuals(regModelku)
+head(residual)
 View(residual)
 
 #Normlaitas
@@ -46,14 +47,14 @@ ks.test(residual,'pnorm',0,sd(residual)) # p value > dari alfa  maka normal
 
 #homo kedastisitas
 library(lmtest)
-bptest(regModelku)
+bptest(model)
 
 #Autokorelasi
-dwtest(regModelku)
+dwtest(model)
 
 #multiko
 library(car)
-vif(regModelku)
+vif(model)
 
 
 
